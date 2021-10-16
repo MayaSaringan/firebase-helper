@@ -2,7 +2,7 @@
   "name": "firebase-helper",
   "version": "0.0.1",
   "description": "Wraps around the firebase API for Client in the exact fashion I usually use in my projects",
-  "main": "src/index.ts",
+  "main": "dist",
   "scripts": {
     "build": "tsc",
     "prepare": "yarn run build",
