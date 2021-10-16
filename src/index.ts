@@ -1,7 +1,7 @@
 import firebase from "firebase";
-export * from "./auth";
-export * from "./firestore";
-export * from "./error";
+import * as auth from "./auth";
+import * as firestore from "./firestore";
+import * as error from "./error";
 export { default as Provider } from "./Provider";
 export type { UserData } from "./Provider";
 
@@ -11,3 +11,10 @@ export const initialize = (config: Object): void => {
     firebase.initializeApp(config);
   }
 };
+const firebaseHelper = {
+  initialize,
+  auth,
+  firestore,
+  error,
+};
+export default firebaseHelper;
