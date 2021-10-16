@@ -2,13 +2,6 @@ import firebase from "firebase";
 
 // re-exports some firebase stuff for ease
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const initialize = (config: Object): void => {
-  if (!firebase.apps.length) {
-    firebase.initializeApp(config);
-  }
-};
-
 export const getCurrUser = (): firebase.User => {
   const currUser = firebase.auth().currentUser;
   if (!currUser) {
