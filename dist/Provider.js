@@ -1,6 +1,9 @@
 import React, { useEffect } from "react";
 import firebase from "firebase";
+import { useDispatch } from "react-redux";
+import { login, logout } from "./redux/account";
 const FirebaseProvider = ({ children, onAccountLogin, onAnonymousLogin, onLogout, }) => {
+    const dispatch = useDispatch();
     useEffect(() => {
         firebase.auth().onIdTokenChanged((user) => {
             if (user) {
@@ -9,29 +12,48 @@ const FirebaseProvider = ({ children, onAccountLogin, onAnonymousLogin, onLogout
                     if (idToken) {
                         if (user.providerData && user.providerData.length > 0) {
                             const providerData = user.providerData[0];
-                            onAccountLogin({
+                            dispatch(login({
                                 idToken,
                                 uid,
-                                email: providerData.email,
-                                name: providerData.displayName,
-                                photo: providerData.photoURL,
-                            });
+                                email: providerData.email || undefined,
+                                name: providerData.displayName || undefined,
+                                photo: providerData.photoURL || undefined,
+                                type: "User",
+                            }));
+                            onAccountLogin &&
+                                onAccountLogin({
+                                    idToken,
+                                    uid,
+                                    email: providerData.email || undefined,
+                                    name: providerData.displayName || undefined,
+                                    photo: providerData.photoURL || undefined,
+                                });
                         }
                         else {
-                            onAnonymousLogin({
+                            dispatch(login({
                                 idToken,
                                 uid,
-                            });
+                                email: undefined,
+                                name: "Anonymous",
+                                photo: undefined,
+                                type: "Guest",
+                            }));
+                            onAnonymousLogin &&
+                                onAnonymousLogin({
+                                    idToken,
+                                    uid,
+                                });
                         }
                     }
                 });
             }
             else {
                 console.log("Not logged in!");
-                onLogout();
+                onLogout && onLogout();
+                dispatch(logout());
             }
         });
-    }, [onAccountLogin, onAnonymousLogin, onLogout]);
+    }, [onAccountLogin, onAnonymousLogin, onLogout, dispatch]);
     return React.createElement(React.Fragment, null, children);
 };
 export default FirebaseProvider;
