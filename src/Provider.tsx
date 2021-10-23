@@ -1,16 +1,13 @@
 import React, { FunctionComponent, PropsWithChildren, useEffect } from "react";
 import firebase from "firebase";
-export interface UserData {
-  idToken: string;
-  uid: string;
-  email?: string | null;
-  name?: string | null;
-  photo?: string | null;
-}
+import { useDispatch } from "react-redux";
+import { login, logout } from "./redux/account";
+import type Account from "./types/Account";
+
 interface Props extends PropsWithChildren<unknown> {
-  onAccountLogin: (data: UserData) => void;
-  onAnonymousLogin: (data: UserData) => void;
-  onLogout: () => void;
+  onAccountLogin?: (data: Account) => void;
+  onAnonymousLogin?: (data: Account) => void;
+  onLogout?: () => void;
 }
 const FirebaseProvider: FunctionComponent<Props> = ({
   children,
@@ -18,6 +15,7 @@ const FirebaseProvider: FunctionComponent<Props> = ({
   onAnonymousLogin,
   onLogout,
 }) => {
+  const dispatch = useDispatch();
   useEffect(() => {
     firebase.auth().onIdTokenChanged((user) => {
       if (user) {
@@ -26,27 +24,50 @@ const FirebaseProvider: FunctionComponent<Props> = ({
           if (idToken) {
             if (user.providerData && user.providerData.length > 0) {
               const providerData = user.providerData[0] as firebase.UserInfo;
-              onAccountLogin({
-                idToken,
-                uid,
-                email: providerData.email,
-                name: providerData.displayName,
-                photo: providerData.photoURL,
-              });
+              dispatch(
+                login({
+                  idToken,
+                  uid,
+                  email: providerData.email || undefined,
+                  name: providerData.displayName || undefined,
+                  photo: providerData.photoURL || undefined,
+                  type: "User",
+                }),
+              );
+              onAccountLogin &&
+                onAccountLogin({
+                  idToken,
+                  uid,
+                  email: providerData.email || undefined,
+                  name: providerData.displayName || undefined,
+                  photo: providerData.photoURL || undefined,
+                });
             } else {
-              onAnonymousLogin({
-                idToken,
-                uid,
-              });
+              dispatch(
+                login({
+                  idToken,
+                  uid,
+                  email: undefined,
+                  name: "Anonymous",
+                  photo: undefined,
+                  type: "Guest",
+                }),
+              );
+              onAnonymousLogin &&
+                onAnonymousLogin({
+                  idToken,
+                  uid,
+                });
             }
           }
         });
       } else {
         console.log("Not logged in!");
-        onLogout();
+        onLogout && onLogout();
+        dispatch(logout());
       }
     });
-  }, [onAccountLogin, onAnonymousLogin, onLogout]);
+  }, [onAccountLogin, onAnonymousLogin, onLogout, dispatch]);
 
   return <>{children}</>;
 };

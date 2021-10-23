@@ -1,10 +1,12 @@
 import { ForbiddenError, InternalError } from "./error";
 import firebase from "firebase";
+import Metadata from "./types/Metadata";
 
 interface MetadataDatabase {
   createdAt: firebase.firestore.FieldValue;
   editedAt: firebase.firestore.FieldValue;
 }
+
 export const createMetadata = (): MetadataDatabase => ({
   createdAt: firebase.firestore.FieldValue.serverTimestamp(),
   editedAt: firebase.firestore.FieldValue.serverTimestamp(),
@@ -27,7 +29,7 @@ const interpretFirebaseDocument = <T>(
     createdAt: createdAt.toMillis(),
     editedAt: editedAt.toMillis(),
     id,
-  } as unknown as T;
+  } as unknown as T & Metadata;
   return data;
 };
 export const add = <T>(
