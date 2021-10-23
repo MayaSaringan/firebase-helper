@@ -15,11 +15,11 @@ export const linkWithRedirect = (): void => {
 };
 
 export const signInAnonymously = (): void => {
-  firebase.auth().signInAnonymously;
+  firebase.auth().signInAnonymously();
 };
 export const signInWithRedirect_Google = (): void => {
   firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
 export const signOut = (): void => {
-  firebase.auth().signOut;
+  firebase.auth().signOut();
 };
