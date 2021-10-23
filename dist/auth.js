@@ -11,12 +11,12 @@ export const linkWithRedirect = () => {
     getCurrUser().linkWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
 export const signInAnonymously = () => {
-    firebase.auth().signInAnonymously;
+    firebase.auth().signInAnonymously();
 };
 export const signInWithRedirect_Google = () => {
     firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
 export const signOut = () => {
-    firebase.auth().signOut;
+    firebase.auth().signOut();
 };
 //# sourceMappingURL=auth.js.map
