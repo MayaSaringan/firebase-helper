@@ -153,6 +153,28 @@ export const remove = (
   });
 };
 
+export const get = <T>(
+  collRef: firebase.firestore.CollectionReference,
+  id: string,
+): Promise<T> => {
+  return collRef
+    .doc(id)
+    .get()
+    .then((snapshot) => {
+      return Promise.resolve(
+        interpretFirebaseDocument<T>(snapshot.id, snapshot),
+      );
+    })
+    .catch((e) => {
+      if (e instanceof InternalError) {
+        throw e;
+      }
+      throw new ForbiddenError(
+        `Add operation for firebase failed: ${e.message}`,
+      );
+    });
+};
+
 export const getAll = <T>(
   collRef: firebase.firestore.CollectionReference,
 ): Promise<T[]> => {
