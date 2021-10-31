@@ -15,3 +15,6 @@ export declare const selectIsAccount: import("reselect").OutputSelector<{
 export declare const selectIdToken: import("reselect").OutputSelector<{
     account: AccountState;
 }, string | undefined, (res: Account) => string | undefined>;
+export declare const selectUid: import("reselect").OutputSelector<{
+    account: AccountState;
+}, string | undefined, (res: Account) => string | undefined>;

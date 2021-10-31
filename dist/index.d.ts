@@ -4,7 +4,7 @@ import * as error from "./error";
 import * as storage from "./storage";
 export { default as Provider } from "./Provider";
 export type { default as Metadata } from "./types/Metadata";
-export type { default as Account } from "./types/Account";
+export type { default as Account, AccountID } from "./types/Account";
 export { default as AccountReducer } from "./redux/account";
 export * from "./redux/account";
 export declare const initialize: (config: Record<string, string>) => void;

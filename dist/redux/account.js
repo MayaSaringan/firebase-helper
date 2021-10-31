@@ -18,4 +18,5 @@ export const selectIsAuthenticated = createSelector(selectAccount, ({ idToken })
 export const selectIsGuest = createSelector(selectAccount, selectIsAuthenticated, ({ type }, isAuthenticated) => type === "Guest" && isAuthenticated);
 export const selectIsAccount = createSelector(selectAccount, selectIsAuthenticated, ({ type }, isAuthenticated) => type !== "Guest" && isAuthenticated);
 export const selectIdToken = createSelector(selectAccount, ({ idToken }) => idToken);
+export const selectUid = createSelector(selectAccount, ({ uid }) => uid);
 //# sourceMappingURL=account.js.map
