@@ -42,3 +42,5 @@ export const selectIdToken = createSelector(
   selectAccount,
   ({ idToken }) => idToken,
 );
+
+export const selectUid = createSelector(selectAccount, ({ uid }) => uid);
