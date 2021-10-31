@@ -32,125 +32,100 @@ const interpretFirebaseDocument = <T>(
   } as unknown as T & Metadata;
   return data;
 };
+
 export const add = <T>(
   collRef: firebase.firestore.CollectionReference,
   data: Omit<T, "id">,
 ): Promise<T> => {
-  return new Promise((res, rej) => {
-    collRef
-      .add({
-        ...data,
-        ...createMetadata(),
-      })
-      .then((docRef) => {
-        docRef.get().then((snapshot) => {
-          res(interpretFirebaseDocument(snapshot.id, snapshot));
-        });
-      })
-      .catch((e) => {
-        if (e instanceof InternalError) {
-          rej(e); // forward error
-          return;
-        }
-        rej(
-          new ForbiddenError(`Add operation for firebase failed: ${e.message}`),
-        );
-      });
-  });
+  return collRef
+    .add({
+      ...data,
+      ...createMetadata(),
+    })
+    .then((docRef) => docRef.get())
+    .then((snapshot) =>
+      Promise.resolve(interpretFirebaseDocument<T>(snapshot.id, snapshot)),
+    )
+    .catch((e) => {
+      if (e instanceof InternalError) {
+        throw e;
+      }
+      throw new ForbiddenError(
+        `Add operation for firebase failed: ${e.message}`,
+      );
+    });
 };
 
 export const set = <T>(
   collRef: firebase.firestore.CollectionReference,
   data: T,
 ): Promise<T> => {
-  return new Promise((res, rej) => {
-    const { id, ...restData } = data as T & { id: string };
-    console.log(restData);
-    collRef
-      .doc(id)
-      .set(
-        {
-          ...restData,
-          ...createMetadata(),
-        },
-        { merge: true },
-      )
-      .then(() => {
-        collRef
-          .doc(id)
-          .get()
-          .then((snapshot) => {
-            res(interpretFirebaseDocument(snapshot.id, snapshot));
-          });
-      })
-      .catch((e) => {
-        console.log(e);
-        if (e instanceof InternalError) {
-          rej(e); // forward error
-          return;
-        }
-        rej(
-          new ForbiddenError(`Set operation for firebase failed: ${e.message}`),
-        );
-      });
-  });
+  const { id, ...restData } = data as T & { id: string };
+  console.log(restData);
+  return collRef
+    .doc(id)
+    .set(
+      {
+        ...restData,
+        ...createMetadata(),
+      },
+      { merge: true },
+    )
+    .then(() => collRef.doc(id).get())
+    .then((snapshot) =>
+      Promise.resolve(interpretFirebaseDocument<T>(snapshot.id, snapshot)),
+    )
+    .catch((e) => {
+      if (e instanceof InternalError) {
+        throw e;
+      }
+      throw new ForbiddenError(
+        `Set operation for firebase failed: ${e.message}`,
+      );
+    });
 };
 
 export const edit = <T>(
   collRef: firebase.firestore.CollectionReference,
   data: T,
 ): Promise<T> => {
-  return new Promise((res, rej) => {
-    const { id, ...restData } = data as T & { id: string };
-    collRef
-      .doc(id)
-      .update({
-        ...restData,
-        ...updateMetadata(),
-      })
-      .then(() => {
-        collRef
-          .doc(id)
-          .get()
-          .then((snapshot) => {
-            res(interpretFirebaseDocument(snapshot.id, snapshot));
-          });
-      })
-      .catch((e) => {
-        if (e instanceof InternalError) {
-          rej(e); // forward error
-          return;
-        }
-        rej(
-          new ForbiddenError(
-            `Edit operation for firebase failed: ${e.message}`,
-          ),
-        );
-      });
-  });
+  const { id, ...restData } = data as T & { id: string };
+  return collRef
+    .doc(id)
+    .update({
+      ...restData,
+      ...updateMetadata(),
+    })
+    .then(() => collRef.doc(id).get())
+    .then((snapshot) =>
+      Promise.resolve(interpretFirebaseDocument<T>(snapshot.id, snapshot)),
+    )
+    .catch((e) => {
+      if (e instanceof InternalError) {
+        throw e;
+      }
+      throw new ForbiddenError(
+        `Edit operation for firebase failed: ${e.message}`,
+      );
+    });
 };
 
 export const remove = (
   collRef: firebase.firestore.CollectionReference,
   data: { id: string },
 ): Promise<{ id: string }> => {
-  return new Promise((res, rej) => {
-    collRef
-      .doc(data.id)
-      .delete()
-      .then(() => {
-        res({ id: data.id });
-      })
-      .catch((e) => {
-        if (e instanceof InternalError) {
-          rej(e); // forward error
-          return;
-        }
-        rej(
-          new ForbiddenError(`Add operation for firebase failed: ${e.message}`),
-        );
-      });
-  });
+  return collRef
+    .doc(data.id)
+    .delete()
+    .then(() => ({ id: data.id }))
+    .catch((e) => {
+      if (e instanceof InternalError) {
+        throw e;
+      }
+      throw new ForbiddenError(
+        `Add operation for firebase failed: ${e.message}`,
+      );
+    });
 };
 
 export const get = <T>(
@@ -160,11 +135,9 @@ export const get = <T>(
   return collRef
     .doc(id)
     .get()
-    .then((snapshot) => {
-      return Promise.resolve(
-        interpretFirebaseDocument<T>(snapshot.id, snapshot),
-      );
-    })
+    .then((snapshot) =>
+      Promise.resolve(interpretFirebaseDocument<T>(snapshot.id, snapshot)),
+    )
     .catch((e) => {
       if (e instanceof InternalError) {
         throw e;
@@ -178,25 +151,21 @@ export const get = <T>(
 export const getAll = <T>(
   collRef: firebase.firestore.CollectionReference,
 ): Promise<T[]> => {
-  return new Promise((res, rej) => {
-    collRef
-      .get()
-      .then((querySnapshot) => {
-        const data: T[] = [];
-        querySnapshot.forEach((snapshot) => {
-          data.push(interpretFirebaseDocument(snapshot.id, snapshot));
-        });
-        console.log(data);
-        res(data);
-      })
-      .catch((e) => {
-        if (e instanceof InternalError) {
-          rej(e); // forward error
-          return;
-        }
-        rej(
-          new ForbiddenError(`Add operation for firebase failed: ${e.message}`),
-        );
+  return collRef
+    .get()
+    .then((querySnapshot) => {
+      const data: T[] = [];
+      querySnapshot.forEach((snapshot) => {
+        data.push(interpretFirebaseDocument(snapshot.id, snapshot));
       });
-  });
+      return data;
+    })
+    .catch((e) => {
+      if (e instanceof InternalError) {
+        throw e;
+      }
+      throw new ForbiddenError(
+        `Add operation for firebase failed: ${e.message}`,
+      );
+    });
 };
