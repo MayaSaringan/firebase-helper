@@ -13,5 +13,6 @@ export declare const remove: (collRef: firebase.firestore.CollectionReference, d
 }) => Promise<{
     id: string;
 }>;
+export declare const get: <T>(collRef: firebase.firestore.CollectionReference, id: string) => Promise<T>;
 export declare const getAll: <T>(collRef: firebase.firestore.CollectionReference) => Promise<T[]>;
 export {};
