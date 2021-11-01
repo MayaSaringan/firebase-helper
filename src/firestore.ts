@@ -64,12 +64,15 @@ export const set = <T>(
   console.log(restData);
   return collRef
     .doc(id)
-    .set(
-      {
-        ...restData,
-        ...createMetadata(),
-      },
-      { merge: true },
+    .get()
+    .then((snapshot) =>
+      collRef.doc(id).set(
+        {
+          ...restData,
+          ...(snapshot.exists ? updateMetadata() : createMetadata()),
+        },
+        { merge: true },
+      ),
     )
     .then(() => collRef.doc(id).get())
     .then((snapshot) =>
