@@ -41,10 +41,11 @@ export const set = (collRef, data) => {
     console.log(restData);
     return collRef
         .doc(id)
-        .set({
+        .get()
+        .then((snapshot) => collRef.doc(id).set({
         ...restData,
-        ...createMetadata(),
-    }, { merge: true })
+        ...(snapshot.exists ? updateMetadata() : createMetadata()),
+    }, { merge: true }))
         .then(() => collRef.doc(id).get())
         .then((snapshot) => Promise.resolve(interpretFirebaseDocument(snapshot.id, snapshot)))
         .catch((e) => {
