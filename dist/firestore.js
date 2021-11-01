@@ -10,7 +10,8 @@ export const updateMetadata = () => ({
 const interpretFirebaseDocument = (id, snapshot) => {
     const snapshotData = snapshot.data();
     if (!snapshot.exists || !snapshotData) {
-        throw new InternalError("data is null");
+        // return empty
+        return {};
     }
     const { createdAt, editedAt, ...filteredData } = snapshotData;
     const data = {
