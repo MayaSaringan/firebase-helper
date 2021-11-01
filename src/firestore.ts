@@ -21,7 +21,8 @@ const interpretFirebaseDocument = <T>(
 ): T => {
   const snapshotData = snapshot.data();
   if (!snapshot.exists || !snapshotData) {
-    throw new InternalError("data is null");
+    // return empty
+    return {} as T;
   }
   const { createdAt, editedAt, ...filteredData } = snapshotData;
   const data: T = {
