@@ -8,15 +8,17 @@ export const getCurrUser = () => {
     return currUser;
 };
 export const linkWithRedirect = () => {
-    getCurrUser().linkWithRedirect(new firebase.auth.GoogleAuthProvider());
+    return getCurrUser().linkWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
-export const signInAnonymously = () => {
-    firebase.auth().signInAnonymously();
+export const signInAnonymously = async () => {
+    await firebase.auth().signInAnonymously();
 };
 export const signInWithRedirect_Google = () => {
-    firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+    return firebase
+        .auth()
+        .signInWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
 export const signOut = () => {
-    firebase.auth().signOut();
+    return firebase.auth().signOut();
 };
 //# sourceMappingURL=auth.js.map
