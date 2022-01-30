@@ -10,16 +10,18 @@ export const getCurrUser = (): firebase.User => {
   return currUser;
 };
 
-export const linkWithRedirect = (): void => {
-  getCurrUser().linkWithRedirect(new firebase.auth.GoogleAuthProvider());
+export const linkWithRedirect = (): Promise<void> => {
+  return getCurrUser().linkWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
 
-export const signInAnonymously = (): void => {
-  firebase.auth().signInAnonymously();
+export const signInAnonymously = async (): Promise<void> => {
+  await firebase.auth().signInAnonymously();
 };
-export const signInWithRedirect_Google = (): void => {
-  firebase.auth().signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+export const signInWithRedirect_Google = (): Promise<void> => {
+  return firebase
+    .auth()
+    .signInWithRedirect(new firebase.auth.GoogleAuthProvider());
 };
-export const signOut = (): void => {
-  firebase.auth().signOut();
+export const signOut = (): Promise<void> => {
+  return firebase.auth().signOut();
 };
